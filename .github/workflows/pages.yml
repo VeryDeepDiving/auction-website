@@ -6,9 +6,9 @@ on:
       - main
   pull_request:
 
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true   
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -18,18 +18,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
+
       - name: Install dependencies
-        run: |
-          npm install
+        run: npm install
+
       - name: Build
         run: npm run build
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -38,15 +42,12 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: build
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    # Deploy to the github-pages environment
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    # Specify a runner + deployment step
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
